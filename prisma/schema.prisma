@@ -1,0 +1,100 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  // extensions = [vector] // Disabled for local dev without pgvector
+}
+
+model Session {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  projects  Project[]
+}
+
+model Project {
+  id           String        @id @default(uuid())
+  sessionId    String
+  title        String
+  ideaText     String
+  domain       String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  session      Session       @relation(fields: [sessionId], references: [id])
+  workflowRuns WorkflowRun[]
+
+  @@index([sessionId])
+}
+
+enum RunStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model WorkflowRun {
+  id           String           @id @default(uuid())
+  projectId    String
+  status       RunStatus        @default(RUNNING)
+  version      Int
+  startedAt    DateTime         @default(now())
+  finishedAt   DateTime?
+  errorMessage String?
+  modelUsed    String?
+  createdAt    DateTime         @default(now())
+  project      Project          @relation(fields: [projectId], references: [id])
+  outputs      WorkflowOutput[]
+
+  @@index([projectId])
+}
+
+enum WorkflowStage {
+  INTAKE
+  FUNCTIONAL
+  MORPHOLOGICAL
+  RISKS
+  FINAL
+}
+
+model WorkflowOutput {
+  id            String        @id @default(uuid())
+  runId         String
+  stage         WorkflowStage
+  jsonOutput    Json // The structured output from AI
+  userEdits     Json? // User overrides
+  citations     Json? // IDs of chunks used
+    schemaValid   Boolean       @default(true)
+  latencyMs     Int?
+  promptVersion String?
+  createdAt     DateTime      @default(now())
+  workflowRun   WorkflowRun   @relation(fields: [runId], references: [id])
+
+  @@index([runId])
+}
+
+// RAG Models
+
+model KnowledgeDocument {
+  id        String           @id @default(uuid())
+  title     String
+  source    String
+  tags      String[]
+  content   String
+  createdAt DateTime         @default(now())
+  chunks    KnowledgeChunk[]
+}
+
+model KnowledgeChunk {
+  id         String            @id @default(uuid())
+  documentId String
+  chunkText  String
+  // embedding  Unsupported("vector(768)") // Gemini embeddings are 768 dimensions
+  metadata   Json?
+  createdAt  DateTime          @default(now())
+  document   KnowledgeDocument @relation(fields: [documentId], references: [id])
+
+  @@index([documentId])
+}

@@ -1,0 +1,9 @@
+--- Verifying Groq API Key ---
+✅ Groq API connection successful!
+Response: Hello. Yes, I'm working and ready to
+
+--- Verifying Google API Key (for Embeddings) ---
+⚠️ GOOGLE_API_KEY is missing in .env. RAG features will likely fail.
+
+🎉 Groq is ready to use for text generation.
+⚠️ RAG features might not work without a valid Google API Key.
