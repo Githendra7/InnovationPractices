@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db/prisma';
 import { getSessionId } from '@/lib/db/session';
 
+
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ runId: string }> }) {
     const sessionId = await getSessionId();
     if (!sessionId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

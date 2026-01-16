@@ -3,6 +3,8 @@ import prisma from '@/lib/db/prisma';
 import { getSessionId } from '@/lib/db/session';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const CreateProjectSchema = z.object({
     title: z.string().min(1).max(80),
     ideaText: z.string().min(1).max(4000),

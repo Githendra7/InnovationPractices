@@ -4,6 +4,8 @@ import { getSessionId } from '@/lib/db/session';
 import { runFullWorkflow } from '@/lib/langgraph/graph';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const RunSchema = z.object({
     projectId: z.string().uuid()
 });
