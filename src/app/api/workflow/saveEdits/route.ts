@@ -4,6 +4,8 @@ import { getSessionId } from '@/lib/db/session';
 import { z } from 'zod';
 import * as Schemas from '@/lib/schemas/stages';
 
+export const dynamic = 'force-dynamic';
+
 const SaveEditsSchema = z.object({
     outputId: z.string().uuid(),
     userEdits: z.record(z.string(), z.any()) // Validation tailored to stage?
